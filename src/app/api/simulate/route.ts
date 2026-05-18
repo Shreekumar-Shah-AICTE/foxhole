@@ -1,6 +1,7 @@
 import { google } from "@ai-sdk/google";
 import { streamText } from "ai";
 
+export const runtime = "edge";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
@@ -67,7 +68,12 @@ export async function POST(req: Request) {
       temperature: rigorLevel === "stress" ? 0.8 : 0.6,
     });
 
-    return result.toTextStreamResponse();
+    return result.toTextStreamResponse({
+      headers: {
+        "X-Vercel-AI-Data-Stream": "v1",
+        "Cache-Control": "no-cache, no-transform",
+      },
+    });
   } catch (error: any) {
     console.error("Simulation API Error:", error);
     return new Response(JSON.stringify({ error: error.message || "Failed to process simulation dialog" }), {

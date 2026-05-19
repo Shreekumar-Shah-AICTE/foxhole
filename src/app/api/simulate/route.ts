@@ -1,7 +1,6 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText } from "ai";
 
-export const runtime = "edge";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {

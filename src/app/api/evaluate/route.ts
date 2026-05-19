@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 
 export const maxDuration = 30;
@@ -61,10 +61,15 @@ export async function POST(req: Request) {
     RESPONSE FORMAT RULES:
     You MUST output ONLY a valid JSON block matching this structure. Do NOT wrap it in markdown code blocks, do NOT write any intro or outro text. Output exactly the raw JSON text.`;
 
+    // Create provider with explicit API key
+    const google = createGoogleGenerativeAI({
+      apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    });
+
     const { text } = await generateText({
       model: google("gemini-2.5-flash"),
       prompt: evaluationPrompt,
-      temperature: 0.2, // Keep it highly structured and consistent
+      temperature: 0.2,
     });
 
     // Strip markdown code fences that Gemini sometimes wraps around JSON

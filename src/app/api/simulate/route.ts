@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText } from "ai";
 
 export const runtime = "edge";
@@ -49,13 +49,10 @@ export async function POST(req: Request) {
     4. Focus on asking 1 or 2 sharp, domain-appropriate questions about the user's latest claim or strategic plan.
     5. Directly challenge any logical flaws, poor numbers, or technical vulnerabilities in the user's pitch.`;
 
-    // Configure google provider. Support custom Lobster Trap DPI proxy if active.
-    let provider = google;
-    const lobsterUrl = process.env.LOBSTER_TRAP_URL || "http://localhost:8080";
-    
-    // We can try to use a custom Google client if Lobster Trap is verified as online
-    // For transparent proxying, Veea's Lobster Trap interceptor can proxy it.
-    // If not, standard client will fetch from google direct.
+    // Create provider with explicit API key (supports both GEMINI_API_KEY and GOOGLE_GENERATIVE_AI_API_KEY)
+    const google = createGoogleGenerativeAI({
+      apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    });
     
     // Stream response using Gemini 2.5 Flash for hyper-fast latency
     const result = streamText({
